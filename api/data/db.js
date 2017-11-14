@@ -27,9 +27,11 @@ process.on('SIGTERM', function() {
   });
 });
 
-// process.once('SIGUSR2', function() {
-//   mongoose.connection.close(function() {
-//     console.log("Mongoose disconnected through app termination (SIGUSR2)");
-//     process.kill(process.pid, 'SIGUSR2');
-//   });
-// });
+process.once('SIGUSR2', function() {
+  mongoose.connection.close(function() {
+    console.log("Mongoose disconnected through app termination (SIGUSR2)");
+    process.kill(process.pid, 'SIGUSR2');
+  });
+});
+
+require('./hotels.model.js');
