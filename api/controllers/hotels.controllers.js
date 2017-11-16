@@ -1,12 +1,7 @@
-const dbconn = require('../data/dbconnection.js');
-const ObjectId = require('mongodb').ObjectID;
-
-const hotelData = require('../data/hotel-data.json');
+const mongoose = require('mongoose');
+const Hotel = mongoose.model('Hotel');
 
 module.exports.hotelsGetAll = function(req, res) {
-
-  var db = dbconn.get();
-  var collection = db.collection('hotels');
 
   var offset = 0;
   var count = 5;
@@ -19,29 +14,24 @@ module.exports.hotelsGetAll = function(req, res) {
     count = parseInt(req.query.count, 10);
   }
 
-  collection
-    .find()
+  Hotel.find()
     .skip(offset)
     .limit(count)
-    .toArray(function(err, docs) {
-      console.log("Found hotels", docs.length);
-      res
-        .status(200)
-        .json(docs);
-  });
+    .exec(function(err, hotels) {
+      console.log("Found hotels", hotels.length);
+      res.json(hotels)
+    })
 
 };
 
 module.exports.hotelsGetOne = function(req, res) {
-  var db = dbconn.get();
-  var id = req.params.hotelId;
-  var collection = db.collection('hotels');
-  console.log('GET hotelId', id);
 
-  collection
-    .findOne({
-      _id : ObjectId(id)
-    }, function(err, doc) {
+  var hotelId = req.params.hotelId;
+
+  console.log('GET hotelId', hotelId);
+
+  Hotel.findById(hotelId)
+    .exec(function(err, doc) {
       res
         .status(200)
         .json(doc);
